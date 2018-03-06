@@ -9,9 +9,9 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <Palindrome.h>
 
 uint64_t DoubleBasePalindromes(int max_value_exclusive);
 int makeDecimalPalindrome(int n, bool oddLength);
-bool is_palindrome(std::string str);
 
 #endif //JIMP_EXERCISES_DOUBLEBASEPALINDROMES_H

@@ -4,7 +4,7 @@
 
 #include "Palindrome.h"
 
-bool is_palindrome(std::string str) {
+bool IsPalindrome(std::string str) {
 
     size_t size = str.size();
 

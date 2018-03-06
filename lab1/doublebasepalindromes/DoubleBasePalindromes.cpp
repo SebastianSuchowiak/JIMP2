@@ -13,7 +13,7 @@ uint64_t DoubleBasePalindromes(int max_value_exclusive) {
     for (int i = 1; num < max_value_exclusive; ++i) {
         num = makeDecimalPalindrome(i, true);
         str = std::to_string(num);
-        if (is_palindrome(str) && num < max_value_exclusive) {
+        if (IsPalindrome(str) && num < max_value_exclusive) {
             palindromes_sum += num;
         }
 
@@ -24,7 +24,7 @@ uint64_t DoubleBasePalindromes(int max_value_exclusive) {
     for (int i = 1; num < max_value_exclusive; ++i) {
         num = makeDecimalPalindrome(i, false);
         str = std::to_string(num);
-        if (is_palindrome(str) && num < max_value_exclusive) {
+        if (IsPalindrome(str) && num < max_value_exclusive) {
             palindromes_sum += num;
         }
     }
@@ -46,16 +46,4 @@ int makeDecimalPalindrome(int n, bool oddLength) {
     }
 
     return res;
-}
-
-bool is_palindrome(std::string str) {
-
-    size_t size = str.size();
-
-    for (int i = 0; i < size / 2; ++i) {
-        if (str[i] != str[size - 1 - i]) {
-            return false;
-        }
-    }
-    return true;
 }

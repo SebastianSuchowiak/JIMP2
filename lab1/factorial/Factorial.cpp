@@ -3,11 +3,13 @@
 //
 #include "Factorial.h"
 
-int factorial(int value) {
+bool ArgumentInRange(int value);
+
+int Factorial(int value) {
 
     int result = 1;
 
-    if (value >= 13 || value <= -13) {
+    if (ArgumentInRange(value)) {
         return 0;
     }
 
@@ -23,3 +25,5 @@ int factorial(int value) {
 
     return result;
 }
+
+bool ArgumentInRange(int value) { return value >= 13 || value <= -13; }
