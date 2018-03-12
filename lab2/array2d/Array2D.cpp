@@ -12,7 +12,7 @@ int **Array2D(int n_rows, int n_columns) {
         return nullptr;
     }
 
-    int **array = new int*[n_rows];
+    auto **array = new int*[n_rows];
 
     for (int i = 0; i < n_rows; ++i) {
         array[i] = new int[n_columns];
@@ -32,7 +32,7 @@ int** NewArray2D(int n_rows, int n_columns) {
         return nullptr;
     }
 
-    int **array = new int*[n_rows];
+    auto **array = new int*[n_rows];
 
     for (int i = 0; i < n_rows; ++i) {
         array[i] = new int[n_columns];
