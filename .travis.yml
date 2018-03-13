@@ -47,6 +47,12 @@ script:
   - tests/lab2test/lab2_polybius_step2_tests
   - make lab2_xor_cypher_breaker_tests
   - tests/lab2test/lab2_xor_cypher_breaker_tests
+  - make lab2_greatest_product_step1_tests
+  - tests/lab2test/lab2_greatest_product_step1_tests
+  - make lab2_greatest_product_step2_tests
+  - tests/lab2test/lab2_greatest_product_step2_tests
+  - make lab2_greatest_product_step3_tests
+  - tests/lab2test/lab2_greatest_product_step3_tests
   
 notifications:
   email: false
