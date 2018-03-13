@@ -19,7 +19,7 @@ std::string XorCypherBreaker(const std::vector<char> &cryptogram,
     for (int i = 0; i < 26; ++i) {
         for (int j = 0; j < 26; ++j) {
             for (int k = 0; k < 26; ++k) {
-                key = j + 97;11
+                key = j + 97;
                 key += k + 97;
                 key += i + 97;
 

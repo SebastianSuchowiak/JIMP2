@@ -19,7 +19,7 @@ TEST_P(DoubleBasePalindromeDataDrivenTests, PalindromeShouldReturnExpectedResult
 }
 
 std::vector<TestParam> doubleBasePalindromeTestData
-    {{1'000'000'000, 2609044274}, {14'560, 18228}, {8'989'812, 25'846'868}, {-1, 0}, {300'000, 286'602}};
+    {{1'000'000, 872'187}, {14'560, 18228}, {8'989'812, 25'846'868}, {-1, 0}, {300'000, 286'602}};
 
 INSTANTIATE_TEST_CASE_P(DoubleBasePalindromeTestFixture,
                         DoubleBasePalindromeDataDrivenTests,
