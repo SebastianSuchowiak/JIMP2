@@ -58,7 +58,7 @@ std::unique_ptr <SmartTree> datastructures::RestoreTree(const std::string &tree)
     std::string tmpString;
     std::string valueString;
     int numOfBrackets = 0;
-    int i = 0;
+    int lenOfRootValue = 0;
     bool onLeft = true;
 
     if (tree == "[none]") {
@@ -66,9 +66,9 @@ std::unique_ptr <SmartTree> datastructures::RestoreTree(const std::string &tree)
     }
 
     tmpString = tree.substr(1, tree.length()-2);
-    for (; tmpString[i] != ' '; i++);
-    valueString = tmpString.substr(0, i);
-    tmpString = tmpString.substr(i+1, tmpString.length() - i);
+    for (; tmpString[lenOfRootValue] != ' '; lenOfRootValue++);
+    valueString = tmpString.substr(0, lenOfRootValue);
+    tmpString = tmpString.substr(lenOfRootValue+1, tmpString.length() - lenOfRootValue);
 
     for (int j = 0; j < tmpString.length(); j++) {
 
