@@ -4,6 +4,8 @@
 
 #include <algorithm>
 #include <set>
+#include <fstream>
+#include <sstream>
 #include "WordCounter.h"
 
 size_t datastructures::WordCounter::DistinctWords() {
@@ -14,8 +16,24 @@ size_t datastructures::WordCounter::TotalWords() {
     return m_total_words;
 }
 
-void datastructures::WordCounter::FromInputStream(const std::istream &text_stream) {
+void datastructures::WordCounter::FromInputStream(std::istream &text_stream) {
 
+    std::string not_clean_word;
+    std::stringstream new_word;
+
+    while (text_stream >> not_clean_word) {
+
+        for (char letter: not_clean_word) {
+            if (isalpha(letter)) {
+                new_word << letter;
+            }
+        }
+
+        if (new_word.str().length() > 0) {
+            this->append(Word(new_word.str()));
+        }
+        new_word.clear();
+    }
 }
 
 datastructures::WordCounter::WordCounter() {
@@ -29,14 +47,7 @@ datastructures::WordCounter::WordCounter(const std::initializer_list<datastructu
     m_total_words = 0;
 
     for (const Word &new_word: words) {
-        if(m_words_map.find(new_word) == m_words_map.end()) {
-            m_words_map[new_word] = Counts();
-            m_distinct_words++;
-            m_total_words++;
-        } else  {
-            ++m_words_map[new_word];
-            m_total_words++;
-        }
+        this->append(new_word);
     }
 
 }
@@ -56,6 +67,19 @@ std::set<datastructures::Word> datastructures::WordCounter::Words() {
 
     return words;
 }
+
+void datastructures::WordCounter::append(const datastructures::Word &new_word) {
+
+    if(m_words_map.find(new_word) == m_words_map.end()) {
+        m_words_map[new_word] = Counts();
+        m_distinct_words++;
+        m_total_words++;
+    } else  {
+        ++m_words_map[new_word];
+        m_total_words++;
+    }
+}
+
 
 datastructures::Word::Word(const std::string &word) {
     m_word_stirng = word;

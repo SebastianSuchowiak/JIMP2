@@ -55,10 +55,11 @@ namespace datastructures {
 
         size_t operator[](std::string word);
 
-        void FromInputStream(const std::istream &text_stream);
+        void FromInputStream(std::istream &text_stream);
         size_t DistinctWords();
         size_t TotalWords();
         std::set<Word> Words();
+        void append(const Word &new_word);
     };
 };
 
