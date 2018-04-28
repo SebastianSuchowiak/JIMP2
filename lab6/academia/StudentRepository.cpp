@@ -2,6 +2,8 @@
 // Created by sebastian on 10.04.18.
 //
 
+#include <set>
+#include <regex>
 #include "StudentRepository.h"
 
 academia::StudyYear academia::StudyYear::operator++() {
@@ -68,6 +70,7 @@ bool academia::Student::operator==(const Student other) const {
 
 academia::Student::Student(const string &id, const string &first_name, const string &last_name, const string &program,
                            int year) {
+    Validate(id, first_name, last_name, program, year);
     m_id = id;
     m_first_name = first_name;
     m_last_name = last_name;
@@ -76,3 +79,25 @@ academia::Student::Student(const string &id, const string &first_name, const str
 }
 
 academia::Student::Student() {}
+
+void
+academia::Student::Validate(const string &id, const string &first_name, const string &last_name, const string &program,
+                            int year) {
+
+    std::set<std::string> program_set = {"informatyka", "ekonomia", "matematyka", "fizyka", "filozofia"};
+    std::regex correct_name ("[A-Z][a-z]+");
+
+    if (year > 100 || year < 10) {
+        throw InvalidAge(year);
+    }
+    if (program_set.find(program) == program_set.end()) {
+        throw InvalidProgram(program);
+    }
+    if (!(std::regex_match(first_name, correct_name))) {
+        throw InvalidFirstName(first_name);
+    }
+    if (!(std::regex_match(last_name, correct_name))) {
+        throw InvalidLastName(last_name);
+    }
+
+}

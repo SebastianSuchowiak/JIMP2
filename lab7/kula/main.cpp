@@ -9,4 +9,5 @@ int main() {
     auto *k_1 = new Kula(0, 0, 0, 10);
     std::cout << "Pole powierchni kuli: " << k_1->Pole() << "\n" <<
             "Pole przekroju kuli: " << k_1->Kolo::Pole();
+    delete k_1;
 }
