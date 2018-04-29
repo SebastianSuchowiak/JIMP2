@@ -12,7 +12,6 @@ namespace utility {
 
     class IterableIterator {
     public:
-
         ~IterableIterator() = default;
 
         virtual std::pair<int, std::string> Dereference() const = 0;
@@ -20,9 +19,6 @@ namespace utility {
         virtual bool NotEquals(const std::unique_ptr<IterableIterator> &other) const = 0;
 
     public:
-
-        std::vector<int>::const_iterator m_left_begin;
-        std::vector<std::string>::const_iterator m_right_begin;
         std::vector<int>::const_iterator m_left_end;
         std::vector<std::string>::const_iterator m_right_end;
         std::vector<int>::const_iterator m_current_left;
@@ -39,9 +35,7 @@ namespace utility {
         std::vector<std::string>::const_iterator right_end);
 
         std::pair<int, std::string> Dereference() const override;
-
         IterableIterator &Next() override;
-
         bool NotEquals(const std::unique_ptr<IterableIterator> &other) const override;
     };
 
@@ -72,7 +66,7 @@ namespace utility {
 
     class Zipper : public Iterator {
     public:
-        Zipper(std::vector<int> int_vector, std::vector<std::string> string_vector);
+        Zipper(const std::vector<int> &int_vector, const std::vector<std::string> &string_vector);
 
         std::unique_ptr<IterableIterator> ConstBegin() const override;
         std::unique_ptr<IterableIterator> ConstEnd() const override;
@@ -80,6 +74,32 @@ namespace utility {
     public:
         std::vector<int> m_int_vector;
         std::vector<std::string> m_string_vector;
+    };
+
+
+    class EnumerateIterator : public IterableIterator {
+    public:
+        EnumerateIterator(std::vector<std::string>::const_iterator right_begin,
+        std::vector<std::string>::const_iterator right_end);
+
+        std::pair<int, std::string> Dereference() const override;
+        IterableIterator &Next() override;
+        bool NotEquals(const std::unique_ptr<IterableIterator> &other) const override;
+
+    public:
+        int m_current_index;
+    };
+
+
+    class Enumerate : public Iterator {
+    public:
+        explicit Enumerate(const std::vector<std::string> &string_vector);
+
+        std::unique_ptr<IterableIterator> ConstBegin() const override;
+        std::unique_ptr<IterableIterator> ConstEnd() const override;
+
+    public:
+        std::vector<std::string>  m_string_vector;
     };
 }
 

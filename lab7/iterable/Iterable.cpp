@@ -3,15 +3,12 @@
 //
 
 #include <bits/unique_ptr.h>
-#include <iostream>
 #include "Iterable.h"
 
 utility::ZipperIterator::ZipperIterator(std::vector<int>::const_iterator left_begin,
                                         std::vector<std::string>::const_iterator right_begin,
                                         std::vector<int>::const_iterator left_end,
                                         std::vector<std::string>::const_iterator right_end) {
-    m_left_begin = left_begin;
-    m_right_begin = right_begin;
     m_left_end = left_end;
     m_right_end = right_end;
     m_current_left = left_begin;
@@ -20,7 +17,6 @@ utility::ZipperIterator::ZipperIterator(std::vector<int>::const_iterator left_be
 
 std::pair<int, std::string> utility::ZipperIterator::Dereference() const {
 
-    std::pair<int, std::string> p;
     std::vector<int>::const_iterator first = m_current_left;
     std::vector<std::string>::const_iterator second = m_current_right;
 
@@ -31,8 +27,7 @@ std::pair<int, std::string> utility::ZipperIterator::Dereference() const {
         second = m_current_right - 1;
     }
 
-    p = std::make_pair(*first, *second);
-    return p;
+    return std::pair<int , std::string>(*first, *second);
 }
 
 utility::IterableIterator &utility::ZipperIterator::Next() {
@@ -76,7 +71,7 @@ std::unique_ptr<utility::IterableIterator> utility::Zipper::ConstEnd() const {
                                                            m_int_vector.end(), m_string_vector.end()));;
 }
 
-utility::Zipper::Zipper(std::vector<int> int_vector, std::vector<std::string> string_vector) {
+utility::Zipper::Zipper(const std::vector<int> &int_vector, const std::vector<std::string> &string_vector) {
     m_int_vector = int_vector;
     m_string_vector = string_vector;
 }
@@ -96,4 +91,46 @@ utility::IterableIteratorWrapper utility::Iterator::begin() {
 
 utility::IterableIteratorWrapper utility::Iterator::end() {
     return this->cend();
+}
+
+utility::EnumerateIterator::EnumerateIterator(std::vector<std::string>::const_iterator right_begin,
+                                              std::vector<std::string>::const_iterator right_end) {
+    m_current_index = 1;
+    m_right_end = right_end;
+    m_current_right = right_begin;
+}
+
+bool utility::EnumerateIterator::NotEquals(const std::unique_ptr<utility::IterableIterator> &other) const {
+    return m_current_right != other->m_current_right;
+}
+
+utility::IterableIterator &utility::EnumerateIterator::Next() {
+    if (m_current_right != m_right_end) {
+        m_current_right++;
+        m_current_index++;
+    }
+    return *this;
+}
+
+std::pair<int, std::string> utility::EnumerateIterator::Dereference() const {
+
+    std::vector<std::string>::const_iterator second = m_current_right;
+
+    if (m_current_right == m_right_end) {
+        second = m_current_right - 1;
+    }
+
+    return std::pair<int, std::string>(m_current_index, *second);
+}
+
+utility::Enumerate::Enumerate(const std::vector<std::string> &string_vector) {
+    m_string_vector = string_vector;
+}
+
+std::unique_ptr<utility::IterableIterator> utility::Enumerate::ConstBegin() const {
+    return std::make_unique<EnumerateIterator>(EnumerateIterator(m_string_vector.begin(), m_string_vector.end()));
+}
+
+std::unique_ptr<utility::IterableIterator> utility::Enumerate::ConstEnd() const {
+    return std::make_unique<EnumerateIterator>(EnumerateIterator(m_string_vector.end(), m_string_vector.end()));
 }

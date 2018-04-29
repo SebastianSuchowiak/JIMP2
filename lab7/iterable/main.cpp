@@ -13,10 +13,8 @@ using ::std::vector;
 using ::std::string;
 
 int main() {
-    vector<int> vi{};
-    vector<string> vs{};
-    std::cout << vi.at(0);
-    Zipper x = Zipper(vi, vs);
+    vector<string> vs {"4", "9991", "adfskld"};
+    Enumerate x = Enumerate(vs);
     IterableIteratorWrapper m = x.cbegin();
     IterableIteratorWrapper e = x.cend();
     std::cout << m.operator*().first << "  " << m.operator*().second << "\n";
