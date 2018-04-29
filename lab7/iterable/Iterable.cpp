@@ -19,15 +19,27 @@ utility::ZipperIterator::ZipperIterator(std::vector<int>::const_iterator left_be
 }
 
 std::pair<int, std::string> utility::ZipperIterator::Dereference() const {
-    std::pair<int, std::string> p = std::make_pair(*m_current_left, *m_current_right);
+
+    std::pair<int, std::string> p;
+    std::vector<int>::const_iterator first = m_current_left;
+    std::vector<std::string>::const_iterator second = m_current_right;
+
+    if (m_current_left == m_left_end) {
+        first = m_current_left - 1;
+    }
+    if (m_current_right == m_right_end) {
+        second = m_current_right - 1;
+    }
+
+    p = std::make_pair(*first, *second);
     return p;
 }
 
 utility::IterableIterator &utility::ZipperIterator::Next() {
-    if (m_current_left + 1 != m_left_end) {
+    if (m_current_left != m_left_end) {
         m_current_left++;
     }
-    if (m_current_right + 1 != m_right_end) {
+    if (m_current_right != m_right_end) {
         m_current_right++;
     }
     return *this;
@@ -41,7 +53,7 @@ utility::IterableIteratorWrapper::IterableIteratorWrapper(std::unique_ptr<utilit
     m_iterator = std::move(iterator);
 }
 
-bool utility::IterableIteratorWrapper::operator!=(IterableIteratorWrapper &other) const{
+bool utility::IterableIteratorWrapper::operator!=(const IterableIteratorWrapper &other) const{
     return (*m_iterator).NotEquals(other.m_iterator);
 }
 
@@ -55,13 +67,19 @@ utility::IterableIteratorWrapper &utility::IterableIteratorWrapper::operator++()
 }
 
 std::unique_ptr<utility::IterableIterator> utility::Zipper::ConstBegin() const {
-    return nullptr;
+    return std::make_unique<ZipperIterator>(ZipperIterator(m_int_vector.begin(), m_string_vector.begin(),
+                                                           m_int_vector.end(), m_string_vector.end()));
 }
 
 std::unique_ptr<utility::IterableIterator> utility::Zipper::ConstEnd() const {
-    return nullptr;
+    return std::make_unique<ZipperIterator>(ZipperIterator(m_int_vector.end(), m_string_vector.end(),
+                                                           m_int_vector.end(), m_string_vector.end()));;
 }
 
+utility::Zipper::Zipper(std::vector<int> int_vector, std::vector<std::string> string_vector) {
+    m_int_vector = int_vector;
+    m_string_vector = string_vector;
+}
 
 
 utility::IterableIteratorWrapper utility::Iterator::cbegin() const {

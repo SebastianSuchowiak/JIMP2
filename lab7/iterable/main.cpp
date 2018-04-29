@@ -13,11 +13,18 @@ using ::std::vector;
 using ::std::string;
 
 int main() {
-    vector<int> vi{4, 77, -91};
-    vector<string> vs{"4", "9991", "adfskld"};
-    Zipper z = Zipper(vi, vs);
-    IterableIteratorWrapper t = IterableIteratorWrapper(
-            (std::make_unique<ZipperIterator>(ZipperIterator(vi.begin(), vs.begin(), vi.end(), vs.end()))));
-    ZipperIterator *d = z.m_dx;
-    std::cout << (d->m_current_right);
+    vector<int> vi{};
+    vector<string> vs{};
+    std::cout << vi.at(0);
+    Zipper x = Zipper(vi, vs);
+    IterableIteratorWrapper m = x.cbegin();
+    IterableIteratorWrapper e = x.cend();
+    std::cout << m.operator*().first << "  " << m.operator*().second << "\n";
+    ++m;
+    bool t = m.operator!=(e);
+    std::cout << m.operator*().first << "  " << m.operator*().second << "\n";
+    ++m;
+    std::cout << m.operator*().first << "  " << m.operator*().second << "\n";
+    ++m;
+    std::cout << m.operator*().first << "  " << m.operator*().second << "\n";
 }

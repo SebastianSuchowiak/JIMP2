@@ -49,7 +49,7 @@ namespace utility {
     class IterableIteratorWrapper {
     public:
         explicit IterableIteratorWrapper(std::unique_ptr<IterableIterator> iterator);
-        bool operator!=(IterableIteratorWrapper &other) const;
+        bool operator!=(const IterableIteratorWrapper &other) const;
         std::pair<int, std::string> operator*() const;
         IterableIteratorWrapper &operator++();
 
@@ -78,8 +78,8 @@ namespace utility {
         std::unique_ptr<IterableIterator> ConstEnd() const override;
 
     public:
-        ZipperIterator *m_iterator;
-        ZipperIterator m_dx;
+        std::vector<int> m_int_vector;
+        std::vector<std::string> m_string_vector;
     };
 }
 
