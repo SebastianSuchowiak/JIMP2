@@ -101,6 +101,35 @@ namespace utility {
     public:
         std::vector<std::string>  m_string_vector;
     };
+
+
+    class ProductIterator : public IterableIterator {
+    public:
+        ProductIterator(std::vector<int>::const_iterator left_begin,
+                        std::vector<std::string>::const_iterator right_begin,
+                        std::vector<int>::const_iterator left_end,
+                        std::vector<std::string>::const_iterator right_end);
+
+        std::pair<int, std::string> Dereference() const override;
+        IterableIterator &Next() override;
+        bool NotEquals(const std::unique_ptr<IterableIterator> &other) const override;
+
+    public:
+        std::vector<std::string>::const_iterator m_right_begin;
+    };
+
+
+    class Product : public Iterator {
+    public:
+        explicit Product(const std::vector<int> &int_vector, const std::vector<std::string> &string_vector);
+
+        std::unique_ptr<IterableIterator> ConstBegin() const override;
+        std::unique_ptr<IterableIterator> ConstEnd() const override;
+
+    public:
+        std::vector<std::string>  m_string_vector;
+        std::vector<int> m_int_vector;
+    };
 }
 
 
