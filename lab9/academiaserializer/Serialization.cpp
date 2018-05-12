@@ -43,6 +43,10 @@ std::vector<std::reference_wrapper<const academia::Serializable>> academia::Buil
     return wrapped_rooms;
 }
 
+bool academia::Building::operator==(const academia::Building other) const {
+    return m_name == other.m_name && m_id == other.m_id;
+}
+
 void academia::XmlSerializer::IntegerField(const std::string &field_name, int value) {
     *m_out << XmlFormat(field_name, std::to_string(value));
 }
@@ -170,4 +174,35 @@ std::string academia::JsonSerializer::JsonFormat(const std::string &name, double
         return "\"" + name + "\": " + std::to_string(value);
     }
     return ", \"" + name + "\": " + std::to_string(value);
+}
+
+void academia::BuildingRepository::Add(academia::Building new_building) {
+    if (std::find(m_buildings.begin(), m_buildings.end(), new_building) == m_buildings.end()) {
+        m_buildings.push_back(new_building);
+    }
+}
+
+void academia::BuildingRepository::StoreAll(academia::Serializer *serializer) const {
+    serializer->Header("building_repository");
+    serializer->ArrayField("buildings", getWrappedBuildings());
+    serializer->Footer("building_repository");
+}
+
+std::vector<std::reference_wrapper<const academia::Serializable>> academia::BuildingRepository::getWrappedBuildings() const {
+
+    std::vector<std::reference_wrapper<const Serializable>> wrapped_rooms{};
+
+    for (const Serializable &building: m_buildings){
+        wrapped_rooms.emplace_back(building);
+    }
+
+    return wrapped_rooms;
+}
+
+std::experimental::optional<academia::Building> academia::BuildingRepository::operator[](int building_id) const {
+    for (const Building &building: m_buildings) {
+        if (building.Id() == building_id) {
+            return building;
+        }
+    }
 }

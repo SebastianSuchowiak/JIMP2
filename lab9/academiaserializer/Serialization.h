@@ -9,6 +9,8 @@
 #include <vector>
 #include <ostream>
 #include <memory>
+#include <experimental/optional>
+#include <algorithm>
 
 namespace academia {
 
@@ -148,8 +150,12 @@ namespace academia {
                 m_id{id},
                 m_name{name},
                 m_rooms{rooms}{};
+        
+        int Id() const {return m_id;};
 
         void Serialize(Serializer *serializer) const override;
+
+        bool operator==(const Building other) const;
 
     private:
 
@@ -160,6 +166,24 @@ namespace academia {
         int m_id;
         std::string m_name;
         std::vector<Room> m_rooms;
+    };
+
+
+    class BuildingRepository {
+
+    public:
+
+        BuildingRepository(const std::initializer_list<Building> &buildings) : m_buildings{buildings}{};
+
+        void Add(Building new_building);
+        void StoreAll(Serializer *serializer) const;
+        std::vector<std::reference_wrapper<const academia::Serializable>> getWrappedBuildings() const;
+
+        std::experimental::optional<Building> operator[](int building_id) const;
+
+    private:
+
+        std::vector<Building> m_buildings;
     };
 
 }
