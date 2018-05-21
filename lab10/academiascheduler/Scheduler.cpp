@@ -134,19 +134,20 @@ std::vector<int> keys(const std::map<int, std::vector<int>> &m) {
                        return current.first;
                    });
 
+    std::sort(result.begin(), result.end(),
+              [m](int left, int right) {
+                  return m.at(left).size() > m.at(right).size();
+              });
+
     return result;
 }
 
-bool academia::GreedyScheduler::teacher_right(std::pair<int, std::vector<int>> teacher, int course, std::vector<int> *m_free_teachers) {
-    return std::find(teacher.second.begin(), teacher.second.end(), course) != teacher.second.end() &&
-            std::find(m_free_teachers->begin(), m_free_teachers->end(), teacher.first) != m_free_teachers->end();
-}
 
 std::vector<std::string> get_required_courses(const std::map<int, std::vector<int>> &teacher_courses_assignment) {
 
     std::vector<std::string> result;
 
-    for (const std::pair<int, std::vector<int>> teacher: teacher_courses_assignment) {
+    for (const auto &teacher: teacher_courses_assignment) {
         for (int course: teacher.second) {
             result.push_back(std::to_string(teacher.first) + ":" + std::to_string(course));
         }
@@ -155,6 +156,62 @@ std::vector<std::string> get_required_courses(const std::map<int, std::vector<in
     return result;
 }
 
+std::vector<std::string> get_required_courses(const std::map<int, std::set<int>> &teacher_courses_assignment) {
+
+    std::vector<std::string> result;
+
+    for (const auto &teacher: teacher_courses_assignment) {
+        for (int course: teacher.second) {
+            result.push_back(std::to_string(teacher.first) + ":" + std::to_string(course));
+        }
+    }
+
+    return result;
+}
+
+bool Contains(const std::vector<int> &v, int element) {
+    return std::find(v.begin(), v.end(), element) != v.end();
+}
+
+bool Contains(const std::vector<std::string> &v,const std::string &element) {
+    return std::find(v.begin(), v.end(), element) != v.end();
+}
+
+int find_year(const std::vector<int> &years_only, const std::vector<std::string> &year_courses,
+              int course, int time, const academia::Schedule &schedule) {
+    for (const auto &year: years_only) {
+        if (Contains(year_courses, std::to_string(year) + ":" + std::to_string(course)) &&
+            Contains(schedule.OfYear(year).AvailableTimeSlots(time), time)) {
+            return year;
+        }
+    }
+    return -1;
+}
+
+
+int find_room(const std::vector<int> &rooms, int time, const academia::Schedule &schedule) {
+    for (auto room: rooms) {
+        if (Contains(schedule.OfRoom(room).AvailableTimeSlots(time), time)) {
+            return room;
+        }
+    }
+    return -1;
+}
+
+void delete_element(std::vector<std::string> *vector, const std::string &element) {
+    for (int i = 0; i<vector->size(); ++i) {
+        if ((*vector)[i] == element) {
+            vector->erase(vector->begin() + i);
+            return;
+        }
+    }
+}
+
+bool is_free(int teacher, const academia::Schedule &schedule, int time) {
+    return Contains(schedule.OfTeacher(teacher).AvailableTimeSlots(time), time);
+}
+
+
 academia::Schedule academia::GreedyScheduler::PrepareNewSchedule(const std::vector<int> &rooms,
                                                                  const std::map<int, std::vector<int>> &teacher_courses_assignment,
                                                                  const std::map<int, std::set<int>> &courses_of_year,
@@ -162,24 +219,43 @@ academia::Schedule academia::GreedyScheduler::PrepareNewSchedule(const std::vect
     
     std::vector<int> years_only;
     std::vector<int> teachers_only;
-    std::vector<std::string> m_required_courses;
+    std::vector<std::string> left_teacher_courses;
+    std::vector<std::string> year_courses;
     std::vector<int> m_free_years;
     std::vector<int> m_free_teachers;
+    std::string course_string;
     Schedule m_schedule;
+    int year;
+    int room;
     size_t valid_size;
 
 
-    m_required_courses = get_required_courses(teacher_courses_assignment);
-    valid_size = m_required_courses.size();
+    left_teacher_courses = get_required_courses(teacher_courses_assignment);
+    year_courses = get_required_courses(courses_of_year);
+    valid_size = left_teacher_courses.size();
     years_only = keys(courses_of_year);
     teachers_only = keys(teacher_courses_assignment);
+    int test = teachers_only[0];
 
-    for (int time_slot = 1; time_slot <= n_time_slots && !m_required_courses.empty(); ++time_slot) {
-        m_free_teachers = teachers_only;
-        m_free_years = years_only;
-        for (int room: rooms) {
-            scheduleRoom(teacher_courses_assignment, time_slot, room, courses_of_year, &m_free_teachers,
-                         &m_free_years, &m_required_courses, &m_schedule);
+
+    for (const auto &teacher: teachers_only) {
+        for (const auto &course: teacher_courses_assignment.at(teacher)) {
+            course_string = std::to_string(teacher) + ":" + std::to_string(course);
+            if (!Contains(left_teacher_courses, course_string)) {
+                continue;
+            }
+            for(int time = 1; time <= n_time_slots && Contains(left_teacher_courses, course_string); ++time) {
+                if (!is_free(teacher, m_schedule, time)) {
+                    continue;
+                }
+                year = find_year(years_only, year_courses, course, time, m_schedule);
+                room = find_room(rooms, time, m_schedule);
+                if (year != -1 && room != -1) {
+                    m_schedule.InsertScheduleItem(SchedulingItem(course, teacher, room, time, year));
+                    delete_element(&left_teacher_courses, course_string);
+                }
+            }
+
         }
     }
 
@@ -189,42 +265,4 @@ academia::Schedule academia::GreedyScheduler::PrepareNewSchedule(const std::vect
 
     return m_schedule;
 
-}
-
-void academia::GreedyScheduler::scheduleRoom(const std::map<int, std::vector<int>> &teachers_courses, int time_slot,
-                                             int room,
-                                             const std::map<int, std::set<int>> &years_courses,
-                                             std::vector<int> *m_free_teachers,
-                                             std::vector<int> *m_free_years, std::vector<std::string> *m_required_courses,
-                                             Schedule *schedule) {
-
-
-    for (std::pair<int, std::vector<int>> teacher: teachers_courses) {
-        for (std::pair<int, std::set<int>> year: years_courses) {
-            if (std::find(m_free_years->begin(), m_free_years->end(), year.first) == m_free_years->end()) {
-                continue;
-            }
-            for (int course: year.second) {
-                if (std::find(m_required_courses->begin(), m_required_courses->end(),
-                    std::to_string(teacher.first) + ":" + std::to_string(course)) == m_required_courses->end()) {
-                    continue;
-                }
-                if (teacher_right(teacher, course, m_free_teachers)) {
-                    schedule->InsertScheduleItem(SchedulingItem(course, teacher.first, room, time_slot, year.first));
-
-                    m_free_teachers->erase(remove(m_free_teachers->begin(), m_free_teachers->end(), teacher.first),
-                                           m_free_teachers->end());
-                    m_free_years->erase(remove(m_free_years->begin(), m_free_years->end(), year.first),
-                                       m_free_years->end());
-                    for (int i = 0; i < m_required_courses->size(); ++i) {
-                        if (std::to_string(teacher.first) + ":" + std::to_string(course) == (*m_required_courses)[i]) {
-                            m_required_courses->erase(m_required_courses->begin() + i);
-                            break;
-                        }
-                    }
-                    return;
-                }
-            }
-        }
-    }
 }
